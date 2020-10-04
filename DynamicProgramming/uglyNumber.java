@@ -27,9 +27,9 @@ class Solution {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int x = sc.nextInt();
+        int n = sc.nextInt();
         Solution ob = new Solution();
-        System.out.println(ob.getNthUglyNo(x));
+        System.out.println(ob.getNthUglyNo(n));
         sc.close();
     }
 }
