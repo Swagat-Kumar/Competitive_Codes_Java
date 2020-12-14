@@ -1,5 +1,5 @@
 Dr.Swagat Kumar gyna 0 6.00pm 6.15pm 6.30pm 6.45pm 7.00pm 7.15pm
-Dr.Debavallab Rath heart 0 6.00pm 6.15pm 6.30pm 6.45pm 7.00pm 7.15pm 7.30pm 7.45pm 8.00pm
+Dr.Debavallab Rath heart 1 6.00pm 6.15pm 6.30pm 6.45pm 7.00pm 7.15pm 7.30pm 7.45pm 8.00pm
 Dr.Narendra Modi paediatric 2 4.30pm 4.45pm 5.00pm 5.15pm 5.30pm 5.45pm 6.00pm 6.15pm 6.30pm
-Dr.Ajey Nagar skin 0 2.00pm 2.15pm 2.30pm 2.45pm 3.00pm 3.15pm 3.30pm 3.45pm 4.00pm
+Dr.Ajey Nagar skin 1 2.00pm 2.15pm 2.30pm 2.45pm 3.00pm 3.15pm 3.30pm 3.45pm 4.00pm
 Dr.Puneet Raj gyna 0 1.20pm 1.40pm

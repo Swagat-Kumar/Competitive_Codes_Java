@@ -2,6 +2,20 @@ import java.io.*;
 import java.util.*;
 
 public class Hospital {
+    public void addPatient(String details) {
+        try {
+            PrintWriter patWriter = new PrintWriter(new FileOutputStream(new File("Patient.txt"), true));
+            patWriter.println(details);
+            patWriter.flush();
+            patWriter.close();
+            System.out.println();
+            System.out.println("Patient Registered Successfully!");
+            System.out.println();
+        } catch (IOException e) {
+            System.out.println("Please Create Patient.txt file in default directory");
+        }
+    }
+
     public void addDoctor(String details) {
         try {
             PrintWriter docWriter = new PrintWriter(new FileOutputStream(new File("Doctor.txt"), true));
@@ -16,18 +30,46 @@ public class Hospital {
         }
     }
 
-    public void bookAppointment(String Dept) throws IOException {
+    public void showAppointment(String id) throws IOException {
+        Scanner sc = new Scanner(new File("Patient.txt"));
+        String oldContent = "";
+        boolean found = false;
+        while (sc.hasNextLine()) {
+            Patient p = new Patient(sc.nextLine());
+            if (!found) {
+                if (p.getId().equals(id)) {
+                    p.appointments();
+                    found = true;
+                }
+            }
+            oldContent += p.feedDetails() + "\n";
+        }
+        if (!found) {
+            System.out.println("We don't have Patients for id: " + id);
+        }
+        PrintWriter docWriter = new PrintWriter(new File("Patient.txt"));
+        docWriter.write(oldContent);
+        docWriter.flush();
+        docWriter.close();
+        sc.close();
+
+    }
+
+    public String bookAppointment(String Dept) throws IOException {
         Dept = Dept.toLowerCase();
         Scanner sc = new Scanner(new File("Doctor.txt"));
         String oldContent = "";
         boolean booked = false;
         String bookingDetails = "";
+        String returnDetails = "";
         while (sc.hasNextLine()) {
             Doctor d = new Doctor(sc.nextLine());
             if (!booked) {
                 if (d.department().equals(Dept)) {
                     if (d.isAvailable()) {
-                        bookingDetails += d.name() + " | Appointment Time: " + d.bookNext();
+                        String bn = d.bookNext();
+                        bookingDetails += d.name() + " | Appointment Time: " + bn;
+                        returnDetails += d.name() + " " + bn;
                         booked = true;
                     }
                 }
@@ -47,6 +89,7 @@ public class Hospital {
         docWriter.flush();
         docWriter.close();
         sc.close();
+        return returnDetails;
     }
 
     private void menu() {
@@ -54,26 +97,28 @@ public class Hospital {
         System.out.println("| Main Menu |");
         System.out.println("1. Book Appointment");
         System.out.println("2. Add Doctor");
-        System.out.println("3. Exit");
+        System.out.println("3. Add Patient");
+        System.out.println("4. Show Appointments From Patient_ID");
+        System.out.println("5. Exit");
         System.out.println("Enter Choice :");
     }
 
-    private void book(String choice) {
+    private String book(String choice) {
         this.bookingMenu();
-
+        String returnBook = "";
         try {
             switch (choice) {
                 case "1":
-                    this.bookAppointment("Skin");
+                    returnBook = this.bookAppointment("Skin");
                     break;
                 case "2":
-                    this.bookAppointment("Paediatric");
+                    returnBook = this.bookAppointment("Paediatric");
                     break;
                 case "3":
-                    this.bookAppointment("Heart");
+                    returnBook = this.bookAppointment("Heart");
                     break;
                 case "4":
-                    this.bookAppointment("Gyna");
+                    returnBook = this.bookAppointment("Gyna");
                     break;
                 default:
                     System.out.println("No Such Department Exists");
@@ -81,6 +126,7 @@ public class Hospital {
         } catch (IOException e) {
             System.out.println("Please Create Doctor.txt file in default directory");
         }
+        return returnBook;
     }
 
     private void bookingMenu() {
@@ -94,11 +140,48 @@ public class Hospital {
 
     }
 
+    public boolean checkPatientExists(String id) throws IOException {
+        Scanner sc = new Scanner(new File("Patient.txt"));
+        boolean found = false;
+        while (sc.hasNextLine()) {
+            Patient p = new Patient(sc.nextLine());
+            if (!found) {
+                if (p.getId().equals(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void addToPatient(String id, String bookPassed) {
+        try {
+            Scanner sc = new Scanner(new File("Patient.txt"));
+            String oldContent = "";
+            String pdetails = "";
+            while (sc.hasNextLine()) {
+                Patient p = new Patient(sc.nextLine());
+                pdetails = p.feedDetails();
+                if (p.getId().equals(id)) {
+                    pdetails += " " + bookPassed;
+                }
+                oldContent += pdetails + "\n";
+            }
+            PrintWriter docWriter = new PrintWriter(new File("Patient.txt"));
+            docWriter.write(oldContent);
+            docWriter.flush();
+            docWriter.close();
+            sc.close();
+        } catch (IOException e) {
+            System.out.println("Please Create Patient.txt file in default directory");
+        }
+    }
+
     public void run() {
         Scanner sc = new Scanner(System.in);
         this.menu();
         String line = sc.nextLine();
-        while (!line.equals("3")) {
+        while (!line.equals("5")) {
             if (line.equals("2")) {
                 System.out.println("Dr.first_name last_name dept 0 appointment_time1 appointment_time2.......");
                 String details = sc.nextLine();
@@ -107,10 +190,42 @@ public class Hospital {
                 if (line.equals("1")) {
                     this.bookingMenu();
                     String choice = sc.nextLine();
-                    this.book(choice);
+                    System.out.println("Enter Patient_ID :");
+                    String id = sc.nextLine();
+                    String returnBook = "";
+                    try {
+                        if (checkPatientExists(id)) {
+                            returnBook = this.book(choice);
+                        } else {
+                            System.out.println("");
+                            System.out.println("No Such Patient Exists");
+                            System.out.println("");
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Please Create Patient.txt file in default directory");
+                    }
+                    if (!returnBook.equals("")) {
+                        this.addToPatient(id, returnBook);
+                    }
                 } else {
                     if (line.equals("3")) {
-                        break;
+                        System.out.println("Patient_ID First Name Doctorn Timen....");
+                        String details = sc.nextLine();
+                        this.addPatient(details);
+                    } else {
+                        if (line.equals("4")) {
+                            System.out.println("Enter Patient_ID :");
+                            String id = sc.nextLine();
+                            try {
+                                this.showAppointment(id);
+                            } catch (IOException e) {
+                                System.out.println("Please Create Patient.txt file in default directory");
+                            }
+                        } else {
+                            if (line.equals("5")) {
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -138,7 +253,48 @@ public class Hospital {
         Hospital mHospital = new Hospital();
         mHospital.loading();
         mHospital.run();
+    }
+}
 
+class Patient {
+    private String original;
+    private String[] details;
+    private final String id;
+    private String name;
+
+    public Patient(String patInput) {
+        original = patInput;
+        details = patInput.split(" ");
+        id = details[0];
+        name = details[1] + " " + details[2];
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void appointments() {
+        System.out.println();
+        System.out.println("The Appointments booked for " + this.getName() + " :");
+        System.out.println();
+        boolean zero = false;
+        for (int i = 3; i < details.length; i += 3) {
+            System.out.println(details[i] + " " + details[i + 1] + " : " + details[i + 2]);
+            zero = true;
+        }
+        if (!zero) {
+            System.out.println("");
+            System.out.println("No Appointments Booked Yet!");
+            System.out.println("");
+        }
+    }
+
+    public String feedDetails() {
+        return original;
     }
 }
 
